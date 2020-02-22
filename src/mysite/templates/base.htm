@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel='stylesheet' href='{% static "css/main.css" %}'>
+    <title>Base Template</title>
+    {% include 'base/css.html' %}
+    {% block base_head %}{% endblock %}
+  </head>
+  <body>
+    {% include 'base/navbar.html' with brand_name='eCommerce' %}
+    <div class='container'>
+      {% block content %}{% endblock %}
+    </div>
+    {% include 'base/js.html' %}
+    <script type="text/javascript">
+      $(document).ready(function(){
+          var productForm=$(".form-product-add-ajax")
+          productForm.submit(function(event){
+              var thisForm=$(this)
+              event.preventDefault();
+              var actionEndPoint=thisForm.attr("action");
+              var httpMethod=thisForm.attr("method");
+              var formData=thisForm.serialize();
+              $.ajax({
+                  url: actionEndPoint,
+                  method: httpMethod,
+                  data: formData,
+                  success: function(data){
+                      var submitSpan = thisForm.find('.submit-span')
+                      if (data.added){
+                        submitSpan.html("<button type='submit' class='btn btn-link'>Remove?</button>")
+                      }
+                      else{
+                        submitSpan.html("<button type='submit' class='btn btn-success'>Add To Cart</button>")
+                      }
+                      var navbarCount=$(".navbar-cart-count")
+                      navbarCount.text(data.cartItemCount)
+                  },
+                  error: function(errorData){
+                    console.log("error")
+                    console.log(errorData)
+                  }
+              })
+          })
+      })
+    </script>
+  </body>
+</html>
